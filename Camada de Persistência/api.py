@@ -49,12 +49,12 @@ def insereLocal():
         cursor.execute(SQL)
         SQL_RESULT = cursor.fetchall()
         if (SQL_RESULT):
-            return jsonify({'mensagem': 'Esta Localidade já existe na Base de dados'})
+            return jsonify({'mensagem': 'Esta Localidade já existe na Base de dados'}), 400
         else:
             sql = f"INSERT INTO CEP VALUES ({cep}, '{logradouro}', {ibge}, '{bairro}')"
             cursor.execute(sql)
             conn.commit()
-            return jsonify({'mensagem': 'CEP cadastrado!'})
+            return jsonify({'mensagem': 'CEP cadastrado!'}), 200
     else:
         sql = f"INSERT INTO CIDADE VALUES ({ibge}, '{cidade}', '{uf}', {ddd})"
         cursor.execute(sql)
@@ -63,7 +63,7 @@ def insereLocal():
         cursor.execute(sql)
         conn.commit()
 
-    return jsonify({'mensagem': 'Localidade cadastrada!'})
+    return jsonify({'mensagem': 'Localidade cadastrada!'}), 200
 
 @app.route('/localidade/<int:ibge>', methods=['GET'])
 def obtemCidade(ibge):
@@ -199,21 +199,21 @@ def insereUsuario():
     sql_result = cursor.fetchall()
 
     if (sql_result):
-        return jsonify({'mensagem': 'Este usuario já existe'})
+        return jsonify({'mensagem': 'Este usuario já existe'}), 400
 
     sql = f"SELECT 1 FROM CEP WHERE CEP = {cep};"
     cursor.execute(sql)
     sql_result = cursor.fetchall()
 
     if (not sql_result):
-        return jsonify({'mensagem': 'Este cep não existe na base!'})
+        return jsonify({'mensagem': 'Este cep não existe na base!'}), 400
 
     sql = f"""INSERT INTO USUARIO (nome, login, cep, numero, complemento, telefone) 
                           VALUES ('{nome}', '{login}', {cep}, {numero}, '{complemento}',{telefone}) """
 
     cursor.execute(sql)
     conn.commit()
-    return jsonify({'mensagem': 'Usuario cadastrado!'})
+    return jsonify({'mensagem': 'Usuario cadastrado!'}), 200
 
     cursor.close()
     conn.close()
@@ -233,7 +233,7 @@ def obtemUsuario(id):
             'Complemento': sql_result[4],
             'Telefone': sql_result[5]
         }
-        return jsonify(cidade)
+        return jsonify(cidade), 200
     else:
         return jsonify({'mensagem': 'Usuario não encontrado.'}), 404
 
