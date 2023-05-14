@@ -36,7 +36,7 @@ cursor.execute( """CREATE TABLE IF NOT EXISTS CEP (
 cursor.execute( """CREATE TABLE IF NOT EXISTS Usuario (
                                               id INTEGER NOT NULL AUTO_INCREMENT,
                                               Nome VARCHAR(100) NOT NULL,
-                                              Login VARCHAR(10) NOT NULL,
+                                              Login VARCHAR(20) NOT NULL,
                                               CEP INTEGER(9) NOT NULL,
                                               Numero INTEGER (5),
                                               Complemento VARCHAR(25),

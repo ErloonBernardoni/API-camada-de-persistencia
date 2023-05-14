@@ -177,7 +177,8 @@ def insereUsuario():
     nome = re.sub(r'\d', '', nome)
 
     # Trata campo CEP
-    cep = cep.replace("-", "")
+    cep = str(cep).replace("-", "")
+    int(cep)
 
     #Trata campo telefone
     telefone = re.sub(r'\D', "", str(telefone))
@@ -186,7 +187,7 @@ def insereUsuario():
     #Valida cada campo do JSON
     if (len(str(nome)) > 100 or (nome == "")):
         return jsonify({'mensagem': f'Quantidade de caracteres maior que o permitido ou vazio no campo {nome}'})
-    elif (len(str(login)) > 10 or (login == "")):
+    elif (len(str(login)) > 20 or (login == "")):
         return jsonify({'mensagem': f'Quantidade de caracteres maior que o permitido ou vazio no campo {login}'})
     elif (len(str(cep)) > 8 or (cep == "")):
         return jsonify({'mensagem': f'Quantidade de digitos maior que o permitido ou vazio no campo {cep}'})
@@ -200,12 +201,41 @@ def insereUsuario():
     if (sql_result):
         return jsonify({'mensagem': 'Este usuario já existe'})
 
+    sql = f"SELECT 1 FROM CEP WHERE CEP = {cep};"
+    cursor.execute(sql)
+    sql_result = cursor.fetchall()
+
+    if (not sql_result):
+        return jsonify({'mensagem': 'Este cep não existe na base!'})
+
     sql = f"""INSERT INTO USUARIO (nome, login, cep, numero, complemento, telefone) 
                           VALUES ('{nome}', '{login}', {cep}, {numero}, '{complemento}',{telefone}) """
 
     cursor.execute(sql)
     conn.commit()
     return jsonify({'mensagem': 'Usuario cadastrado!'})
+
+    cursor.close()
+    conn.close()
+
+@app.route ('/usuario/<int:id>', methods=['GET'])
+def obtemUsuario(id):
+    sql = f"SELECT * FROM USUARIO WHERE ID = {id}"
+    cursor.execute(sql)
+    sql_result = cursor.fetchone()
+
+    if (sql_result):
+        cidade = {
+            'Nome': sql_result[0],
+            'Login': sql_result[1],
+            'CEP': sql_result[2],
+            'Numero': sql_result[3],
+            'Complemento': sql_result[4],
+            'Telefone': sql_result[5]
+        }
+        return jsonify(cidade)
+    else:
+        return jsonify({'mensagem': 'Usuario não encontrado.'}), 404
 
     cursor.close()
     conn.close()
