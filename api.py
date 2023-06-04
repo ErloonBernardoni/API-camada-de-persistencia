@@ -236,7 +236,7 @@ def obtemUsuario(id):
     resultado = cursor.fetchone()
 
     if resultado:
-        cidade = {
+        usuario = {
             'Nome': resultado[0],
             'Login': resultado[1],
             'CEP': resultado[2],
@@ -244,7 +244,7 @@ def obtemUsuario(id):
             'Complemento': resultado[4],
             'Telefone': resultado[5]
         }
-        return jsonify(cidade), 200
+        return jsonify(usuario), 200
     else:
         return jsonify({'mensagem': 'Usuario não encontrado.'}), 404
 
@@ -262,6 +262,43 @@ def deletaUsuario(id):
         cursor.execute(SQL)
         conn.commit()
         return jsonify({'messagem': 'Usuario excluido!'}), 200
+
+@app.route('/usuarios/', methods=['GET'])
+def obtemUsuarios():
+    SQL = f"SELECT * FROM USUARIO"
+    cursor.execute(SQL)
+    resultado = cursor.fetchall()
+
+    if resultado:
+        return jsonify(resultado), 200
+    else:
+        return jsonify({'mensagem': 'Usuario não encontrado.'}), 404
+
+
+@app.route('/dados/', methods=['GET'])
+def obtemTudo():
+    SQL = """select x.nome, 
+	                x.Login, 
+                    x.CEP, 
+                    x.Numero, 
+                    x.Complemento,
+                    x.Telefone,
+                    z.Logradouro,
+                    z.IBGE,
+                    z.Bairro,
+                    y.Cidade,
+                    y.UF,
+                    y.DDD
+	                from usuario x 
+	   		             inner join cep z on (x.CEP = z.CEP)
+	   		             inner join cidade y on (z.IBGE = y.IBGE)"""
+    cursor.execute(SQL)
+    resultado = cursor.fetchall()
+
+    if resultado:
+        return jsonify(resultado), 200
+    else:
+        return jsonify({'mensagem': 'Banco vazio.'}), 404
 
 
 if __name__ == '__main__':
