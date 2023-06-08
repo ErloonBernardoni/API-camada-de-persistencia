@@ -8,7 +8,7 @@ Integrantes:
 
 •	Felipe S.
 
-•	Vinicius P.
+•	Vinicius B.
 
 •	Deyvid H.
 
