@@ -268,9 +268,19 @@ def obtemUsuarios():
     SQL = f"SELECT * FROM USUARIO"
     cursor.execute(SQL)
     resultado = cursor.fetchall()
-
     if resultado:
-        return jsonify(resultado), 200
+        users = []
+        for user in resultado:
+            users.append({
+                "id": user[0],
+                "nome": user[1],
+                "login": user[2],
+                "cep": user[3],
+                "numero": user[4],
+                "complemento": user[5],
+                "telefone": user[6],
+            })
+        return jsonify(users), 200
     else:
         return jsonify({'mensagem': 'Usuario não encontrado.'}), 404
 
