@@ -231,18 +231,48 @@ def insereUsuario():
 
 @app.route('/usuario/<int:id>', methods=['GET'])
 def obtemUsuario(id):
-    SQL = f"SELECT * FROM USUARIO WHERE ID = {id}"
+    SQL = f"""SELECT 
+                u.id, 
+                u.nome, 
+                u.login, 
+                u.cep, 
+                u.numero, 
+                u.complemento, 
+                u.telefone, 
+                ce.Logradouro, 
+                ce.IBGE, 
+                ce.Bairro, 
+                ci.Cidade, 
+                ci.UF, 
+                ci.DDD 
+            FROM 
+                USUARIO u 
+            INNER JOIN CEP ce 
+                ON ce.CEP = u.CEP 
+            INNER JOIN CIDADE ci 
+                ON ce.IBGE = ci.IBGE 
+            WHERE 
+                u.id = {id}"""
     cursor.execute(SQL)
     resultado = cursor.fetchone()
 
     if resultado:
         usuario = {
-            'Nome': resultado[0],
-            'Login': resultado[1],
-            'CEP': resultado[2],
-            'Numero': resultado[3],
-            'Complemento': resultado[4],
-            'Telefone': resultado[5]
+            'id': resultado[0],
+            'nome': resultado[1],
+            'login': resultado[2],
+            'cep': {
+                'cep': resultado[3],
+                'logradouro': resultado[7],
+                'ibge': resultado[8],
+                'bairro': resultado[9],
+                'cidade': resultado[10],
+                'uf': resultado[11],
+                'ddd': resultado[12]
+            },
+            'numero': resultado[4],
+            'complemento': resultado[5],
+            'telefone': resultado[6]
         }
         return jsonify(usuario), 200
     else:
@@ -265,7 +295,25 @@ def deletaUsuario(id):
 
 @app.route('/usuarios/', methods=['GET'])
 def obtemUsuarios():
-    SQL = f"SELECT * FROM USUARIO"
+    SQL = f"""SELECT 
+        u.id, 
+        u.nome, 
+        u.login, 
+        u.cep, 
+        u.numero, 
+        u.complemento, 
+        u.telefone, 
+        ce.Logradouro, 
+        ce.IBGE, 
+        ce.Bairro, 
+        ci.Cidade, 
+        ci.UF, 
+        ci.DDD 
+    FROM USUARIO u 
+    INNER JOIN CEP ce 
+        ON ce.cep = u.cep 
+    INNER JOIN CIDADE ci 
+        ON ce.IBGE = ci.IBGE"""
     cursor.execute(SQL)
     resultado = cursor.fetchall()
     if resultado:
@@ -299,9 +347,9 @@ def obtemTudo():
                     y.Cidade,
                     y.UF,
                     y.DDD
-	                from usuario x 
-	   		             inner join cep z on (x.CEP = z.CEP)
-	   		             inner join cidade y on (z.IBGE = y.IBGE)"""
+	                from USUARIO x 
+	   		             inner join CEP z on (x.CEP = z.CEP)
+	   		             inner join CIDADE y on (z.IBGE = y.IBGE)"""
     cursor.execute(SQL)
     resultado = cursor.fetchall()
 
